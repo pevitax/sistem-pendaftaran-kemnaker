@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pendaftaran Pelatihan - Kemnaker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Pendaftaran Pelatihan</h1>
+            <p>Rektorat Bina Intala - Kementerian Ketenagakerjaan RI</p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress">
+            <div class="step active" id="step-1">1</div>
+            <div class="line" id="line-1"></div>
+            <div class="step" id="step-2">2</div>
+            <div class="line" id="line-2"></div>
+            <div class="step" id="step-3">3</div>
+        </div>
+        <div class="progress-label">
+            <span id="label-1" class="active">Data Pribadi</span>
+            <span id="label-2">Data Pekerjaan</span>
+            <span id="label-3">Data Lembaga</span>
+        </div>
+
+        <form action="/daftar" method="POST">
+
+            <!-- STEP 1 -->
+            <div id="section-1">
+                <div class="form-group">
+                    <label>Nama Lengkap <span class="required">*</span></label>
+                    <input type="text" name="nama" placeholder="Masukkan nama lengkap">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Tempat Lahir <span class="required">*</span></label>
+                        <input type="text" name="tempat_lahir" placeholder="Kota kelahiran">
+                    </div>
+                    <div class="form-group">
+                        <label>Tanggal Lahir <span class="required">*</span></label>
+                        <input type="date" name="tanggal_lahir">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Jenis Kelamin <span class="required">*</span></label>
+                    <select name="jenis_kelamin">
+                        <option value="">-- Pilih --</option>
+                        <option value="L">Laki-laki</option>
+                        <option value="P">Perempuan</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>NIK <span class="required">*</span></label>
+                    <input type="text" name="nik" placeholder="16 digit NIK" maxlength="16">
+                </div>
+                <div class="form-group">
+                    <label>Alamat Rumah <span class="required">*</span></label>
+                    <input type="text" name="alamat" placeholder="Masukkan alamat lengkap">
+                </div>
+                <div class="form-group">
+                    <label>No HP (WA) <span class="required">*</span></label>
+                    <input type="text" name="no_hp" placeholder="Contoh: 08123456789">
+                </div>
+                <div class="form-group">
+                    <label>Email Pribadi <span class="required">*</span></label>
+                    <input type="email" name="email" placeholder="Masukkan email aktif">
+                </div>
+                <button type="button" onclick="goTo(2)">Selanjutnya →</button>
+            </div>
+
+            <!-- STEP 2 -->
+            <div id="section-2" style="display:none;">
+                <div class="form-group">
+                    <label>Jenis Jabatan <span class="required">*</span></label>
+                    <select name="jenis_jabatan">
+                        <option value="">-- Pilih Jabatan --</option>
+                        <option value="instruktur_pemerintah">Instruktur Pemerintah</option>
+                        <option value="instruktur_swasta">Instruktur Swasta</option>
+                        <option value="tenaga_pelatihan">Tenaga Pelatihan</option>
+                        <option value="mentor">Mentor</option>
+                        <option value="lainnya">Lainnya</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Pendidikan Terakhir <span class="required">*</span></label>
+                    <select name="pendidikan">
+                        <option value="">-- Pilih Pendidikan --</option>
+                        <option value="sma">SMA/SMK/Sederajat</option>
+                        <option value="d3">D3</option>
+                        <option value="s1">S1</option>
+                        <option value="s2">S2</option>
+                        <option value="s3">S3</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Program Studi</label>
+                    <input type="text" name="prodi" placeholder="Contoh: Teknik Informatika">
+                </div>
+                <div style="display:flex; gap:12px;">
+                    <button type="button" class="btn-secondary" onclick="goTo(1)">← Kembali</button>
+                    <button type="button" onclick="goTo(3)">Selanjutnya →</button>
+                </div>
+            </div>
+
+            <!-- STEP 3 -->
+            <div id="section-3" style="display:none;">
+                <div class="form-group">
+                    <label>Tipe Kelembagaan <span class="required">*</span></label>
+                    <select name="tipe_lembaga">
+                        <option value="">-- Pilih Tipe --</option>
+                        <option value="pemerintah">Pemerintah</option>
+                        <option value="swasta">Swasta</option>
+                        <option value="blud">BLUD</option>
+                        <option value="lainnya">Lainnya</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Nama Lembaga <span class="required">*</span></label>
+                    <input type="text" name="nama_lembaga" placeholder="Masukkan nama lembaga">
+                </div>
+                <div class="form-group">
+                    <label>Alamat Lembaga <span class="required">*</span></label>
+                    <input type="text" name="alamat_lembaga" placeholder="Masukkan alamat lengkap lembaga">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Kabupaten / Kota <span class="required">*</span></label>
+                        <input type="text" name="kota" placeholder="Contoh: Kota Jakarta Selatan">
+                    </div>
+                    <div class="form-group">
+                        <label>Provinsi <span class="required">*</span></label>
+                        <input type="text" name="provinsi" placeholder="Contoh: DKI Jakarta">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Telepon Lembaga</label>
+                    <input type="text" name="telp_lembaga" placeholder="Contoh: 02112345678">
+                </div>
+                <div class="form-group">
+                    <label>Email Lembaga</label>
+                    <input type="email" name="email_lembaga" placeholder="Masukkan email lembaga">
+                </div>
+                <div style="display:flex; gap:12px;">
+                    <button type="button" class="btn-secondary" onclick="goTo(2)">← Kembali</button>
+                    <button type="submit">Kirim Pendaftaran ✓</button>
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        function goTo(step) {
+            for (let i = 1; i <= 3; i++) {
+                document.getElementById('section-' + i).style.display = 'none';
+                document.getElementById('step-' + i).className = 'step';
+                document.getElementById('label-' + i).className = '';
+            }
+            document.getElementById('section-' + step).style.display = 'block';
+            document.getElementById('step-' + step).className = 'step active';
+            document.getElementById('label-' + step).className = 'active';
+
+            for (let i = 1; i < step; i++) {
+                document.getElementById('step-' + i).className = 'step done';
+                document.getElementById('step-' + i).innerHTML = '✓';
+                document.getElementById('label-' + i).className = 'done';
+                document.getElementById('line-' + i).className = 'line active';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - Kemnaker</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+</head>
+
+<body class="dashboard-body">
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+<div class="sidebar-header">
+    <h2>Kemnaker</h2>
+    <p>Rektorat Bina Intala</p>
+    <a href="/logout" style="
+        display: block;
+        margin-top: 12px;
+        font-size: 12px;
+        color: rgba(255,255,255,0.6);
+        text-decoration: none;
+    ">🚪 Logout</a>
+</div>
+        <ul class="sidebar-menu">
+            <li class="active">📋 Data Peserta</li>
+            <li>📊 Statistik</li>
+            <li>⚙️ Pengaturan</li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+        <!-- Top Bar -->
+  <div class="topbar">
+    <h1>Data Peserta Pelatihan</h1>
+    <a href="/export" class="btn-export">⬇ Export Excel</a>
+``</div>
+
+<div class="search-bar">
+    <input type="text" id="searchInput" placeholder="🔍 Cari nama, provinsi, lembaga..." onkeyup="searchTable()">
+</div>
+
+        <!-- Stats Cards -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-number">{{ total }}</div>
+                <div class="stat-label">Total Peserta</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ provinsi_count }}</div>
+                <div class="stat-label">Provinsi</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ lembaga_count }}</div>
+                <div class="stat-label">Lembaga</div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama</th>
+                        <th>Email</th>
+                        <th>No HP</th>
+                        <th>Jabatan</th>
+                        <th>Lembaga</th>
+                        <th>Provinsi</th>
+                        <th>Tanggal Daftar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in peserta %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ p.nama }}</td>
+                        <td>{{ p.email }}</td>
+                        <td>{{ p.no_hp }}</td>
+                        <td>{{ p.jenis_jabatan }}</td>
+                        <td>{{ p.nama_lembaga }}</td>
+                        <td>{{ p.provinsi }}</td>
+                        <td>{{ p.tanggal_daftar.strftime('%d/%m/%Y') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+</body>
+</html>
