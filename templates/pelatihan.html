@@ -67,11 +67,15 @@
                             </span>
                         </td>
                         <td>
-                            <a href="/pelatihan/hapus/{{ p.id }}" 
-                               onclick="return confirm('Yakin hapus pelatihan ini?')"
-                               style="color:red;text-decoration:none;font-size:13px;">
-                                🗑 Hapus
-                            </a>
+<a href="/pelatihan/edit/{{ p.id }}"
+   style="color:#1a3a6b;text-decoration:none;font-size:13px;margin-right:12px;">
+    ✏️ Edit
+</a>
+<a href="/pelatihan/hapus/{{ p.id }}" 
+   onclick="return confirm('Yakin hapus pelatihan ini?')"
+   style="color:red;text-decoration:none;font-size:13px;">
+    🗑 Hapus
+</a>
                         </td>
                     </tr>
                     {% else %}

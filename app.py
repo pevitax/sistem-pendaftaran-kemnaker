@@ -243,6 +243,20 @@ def tambah_pelatihan():
         db.session.commit()
         return redirect(url_for('pelatihan'))
     return render_template('tambah_pelatihan.html')
+@app.route('/pelatihan/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_pelatihan(id):
+    p = Pelatihan.query.get_or_404(id)
+    if request.method == 'POST':
+        p.nama = request.form.get('nama')
+        p.tanggal_mulai = request.form.get('tanggal_mulai')
+        p.tanggal_selesai = request.form.get('tanggal_selesai')
+        p.tipe = request.form.get('tipe')
+        p.kuota = request.form.get('kuota')
+        p.status = request.form.get('status')
+        db.session.commit()
+        return redirect(url_for('pelatihan'))
+    return render_template('edit_pelatihan.html', pelatihan=p)
 
 @app.route('/pelatihan/hapus/<int:id>')
 @login_required
@@ -265,6 +279,33 @@ def hapus_peserta(id):
     db.session.delete(peserta)
     db.session.commit()
     return redirect(url_for('dashboard'))
+@app.route('/peserta/edit/<int:id>', methods=['GET', 'POST'])
+@login_required
+def edit_peserta(id):
+    peserta = Peserta.query.get_or_404(id)
+    if request.method == 'POST':
+        peserta.nama = request.form.get('nama')
+        peserta.tempat_lahir = request.form.get('tempat_lahir')
+        peserta.tanggal_lahir = request.form.get('tanggal_lahir')
+        peserta.jenis_kelamin = request.form.get('jenis_kelamin')
+        peserta.nik = request.form.get('nik')
+        peserta.alamat = request.form.get('alamat')
+        peserta.no_hp = request.form.get('no_hp')
+        peserta.email = request.form.get('email')
+        peserta.jenis_jabatan = request.form.get('jenis_jabatan')
+        peserta.pendidikan = request.form.get('pendidikan')
+        peserta.prodi = request.form.get('prodi')
+        peserta.tipe_lembaga = request.form.get('tipe_lembaga')
+        peserta.nama_lembaga = request.form.get('nama_lembaga')
+        peserta.alamat_lembaga = request.form.get('alamat_lembaga')
+        peserta.kota = request.form.get('kota')
+        peserta.provinsi = request.form.get('provinsi')
+        peserta.telp_lembaga = request.form.get('telp_lembaga')
+        peserta.email_lembaga = request.form.get('email_lembaga')
+        db.session.commit()
+        return redirect(url_for('detail_peserta', id=peserta.id))
+    daftar_pelatihan = Pelatihan.query.filter_by(status='aktif').all()
+    return render_temp
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))

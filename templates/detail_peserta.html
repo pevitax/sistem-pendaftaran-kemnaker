@@ -240,12 +240,21 @@
                 </div>
                 {% endif %}
 
-                <div class="btn-row">
-                    <a href="/dashboard" class="btn-back">← Kembali</a>
-                    <a href="/peserta/hapus/{{ peserta.id }}" 
-                       onclick="return confirm('Yakin hapus peserta ini?')"
-                       class="btn-hapus">🗑 Hapus Peserta</a>
-                </div>
+ <div class="btn-row">
+    <a href="/dashboard" class="btn-back">← Kembali</a>
+    <a href="/peserta/edit/{{ peserta.id }}" style="
+        padding: 10px 24px;
+        background-color: #28a745;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+    ">✏️ Edit Peserta</a>
+    <a href="/peserta/hapus/{{ peserta.id }}" 
+       onclick="return confirm('Yakin hapus peserta ini?')"
+       class="btn-hapus">🗑 Hapus Peserta</a>
+</div>
 
             </div>
         </div>
