@@ -153,24 +153,51 @@
         </form>
     </div>
 
-    <script>
-        function goTo(step) {
-            for (let i = 1; i <= 3; i++) {
-                document.getElementById('section-' + i).style.display = 'none';
-                document.getElementById('step-' + i).className = 'step';
-                document.getElementById('label-' + i).className = '';
-            }
-            document.getElementById('section-' + step).style.display = 'block';
-            document.getElementById('step-' + step).className = 'step active';
-            document.getElementById('label-' + step).className = 'active';
-
-            for (let i = 1; i < step; i++) {
-                document.getElementById('step-' + i).className = 'step done';
-                document.getElementById('step-' + i).innerHTML = '✓';
-                document.getElementById('label-' + i).className = 'done';
-                document.getElementById('line-' + i).className = 'line active';
+<script>
+    function goTo(step) {
+        // Validasi sebelum lanjut
+        if (step > 1) {
+            const currentSection = document.getElementById('section-' + (step - 1));
+            const inputs = currentSection.querySelectorAll('input, select');
+            for (let input of inputs) {
+                if (input.hasAttribute('required') || 
+                    input.name === 'nama' || 
+                    input.name === 'tempat_lahir' || 
+                    input.name === 'tanggal_lahir' || 
+                    input.name === 'jenis_kelamin' || 
+                    input.name === 'nik' || 
+                    input.name === 'alamat' || 
+                    input.name === 'no_hp' || 
+                    input.name === 'email' ||
+                    input.name === 'jenis_jabatan' ||
+                    input.name === 'pendidikan') {
+                    if (!input.value.trim()) {
+                        input.focus();
+                        input.style.borderColor = 'red';
+                        setTimeout(() => input.style.borderColor = '#ddd', 3000);
+                        alert('Mohon lengkapi semua field yang wajib diisi!');
+                        return;
+                    }
+                }
             }
         }
-    </script>
+
+        for (let i = 1; i <= 3; i++) {
+            document.getElementById('section-' + i).style.display = 'none';
+            document.getElementById('step-' + i).className = 'step';
+            document.getElementById('label-' + i).className = '';
+        }
+        document.getElementById('section-' + step).style.display = 'block';
+        document.getElementById('step-' + step).className = 'step active';
+        document.getElementById('label-' + step).className = 'active';
+
+        for (let i = 1; i < step; i++) {
+            document.getElementById('step-' + i).className = 'step done';
+            document.getElementById('step-' + i).innerHTML = '✓';
+            document.getElementById('label-' + i).className = 'done';
+            document.getElementById('line-' + i).className = 'line active';
+        }
+    }
+</script>
 </body>
 </html>
