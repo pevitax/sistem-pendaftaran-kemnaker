@@ -1,23 +1,40 @@
 from flask import Flask, render_template, request, redirect, url_for, Response, session
 from flask_sqlalchemy import SQLAlchemy
+from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from functools import wraps
 import csv
 import io
+import os
 
 app = Flask(__name__)
-import os
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///pendaftaran.db')
 if database_url.startswith('postgres://'):
     database_url = database_url.replace('postgres://', 'postgresql://', 1)
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'kemnaker-bina-intala-2026'
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'ajienata97@gmail.com'
+app.config['MAIL_PASSWORD'] = 'xafjtoqpkmjpeaji'
+app.config['MAIL_DEFAULT_SENDER'] = 'ajienata97@gmail.com'
 
+mail = Mail(app)
 db = SQLAlchemy(app)
 
-# Database Models
+class Pelatihan(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    nama = db.Column(db.String(200), nullable=False)
+    tanggal_mulai = db.Column(db.String(20))
+    tanggal_selesai = db.Column(db.String(20))
+    tipe = db.Column(db.String(20))
+    kuota = db.Column(db.Integer)
+    status = db.Column(db.String(20), default='aktif')
+    tanggal_dibuat = db.Column(db.DateTime, default=datetime.now)
+
 class Peserta(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nama = db.Column(db.String(100), nullable=False)
@@ -38,6 +55,8 @@ class Peserta(db.Model):
     provinsi = db.Column(db.String(100))
     telp_lembaga = db.Column(db.String(20))
     email_lembaga = db.Column(db.String(100))
+    pelatihan_id = db.Column(db.Integer, db.ForeignKey('pelatihan.id'))
+    pelatihan = db.relationship('Pelatihan', backref='peserta')
     tanggal_daftar = db.Column(db.DateTime, default=datetime.now)
 
 class Admin(db.Model):
@@ -47,7 +66,6 @@ class Admin(db.Model):
 
 with app.app_context():
     db.create_all()
-    # Buat admin default kalau belum ada
     if not Admin.query.filter_by(username='admin').first():
         admin = Admin(
             username='admin',
@@ -56,7 +74,6 @@ with app.app_context():
         db.session.add(admin)
         db.session.commit()
 
-# Login required decorator
 def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -65,10 +82,10 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
-# Routes
 @app.route('/')
 def home():
-    return render_template('index.html')
+    daftar_pelatihan = Pelatihan.query.filter_by(status='aktif').all()
+    return render_template('index.html', pelatihan=daftar_pelatihan)
 
 @app.route('/daftar', methods=['POST'])
 def daftar():
@@ -90,10 +107,59 @@ def daftar():
         kota=request.form.get('kota'),
         provinsi=request.form.get('provinsi'),
         telp_lembaga=request.form.get('telp_lembaga'),
-        email_lembaga=request.form.get('email_lembaga')
+        email_lembaga=request.form.get('email_lembaga'),
+        pelatihan_id=request.form.get('pelatihan_id')
     )
     db.session.add(peserta)
     db.session.commit()
+
+    try:
+        msg = Message(
+            subject='Konfirmasi Pendaftaran Pelatihan - Kemnaker',
+            recipients=[peserta.email]
+        )
+        msg.html = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+            <div style="background-color: #1a3a6b; padding: 30px; text-align: center;">
+                <h1 style="color: white; margin: 0;">Kementerian Ketenagakerjaan RI</h1>
+                <p style="color: rgba(255,255,255,0.8);">Rektorat Bina Intala</p>
+            </div>
+            <div style="padding: 30px; background-color: #f9f9f9;">
+                <h2 style="color: #1a3a6b;">Pendaftaran Berhasil! ✅</h2>
+                <p>Yth. <strong>{peserta.nama}</strong>,</p>
+                <p>Pendaftaran Anda telah kami terima dengan detail sebagai berikut:</p>
+                <table style="width:100%; border-collapse: collapse; margin: 20px 0;">
+                    <tr style="background-color: #f0f4f8;">
+                        <td style="padding: 10px; font-weight: bold;">Nama</td>
+                        <td style="padding: 10px;">{peserta.nama}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; font-weight: bold;">Email</td>
+                        <td style="padding: 10px;">{peserta.email}</td>
+                    </tr>
+                    <tr style="background-color: #f0f4f8;">
+                        <td style="padding: 10px; font-weight: bold;">Lembaga</td>
+                        <td style="padding: 10px;">{peserta.nama_lembaga}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; font-weight: bold;">Provinsi</td>
+                        <td style="padding: 10px;">{peserta.provinsi}</td>
+                    </tr>
+                </table>
+                <p>Panitia akan menghubungi Anda melalui email atau WhatsApp untuk informasi lebih lanjut.</p>
+                <p>Terima kasih telah mendaftar!</p>
+            </div>
+            <div style="background-color: #1a3a6b; padding: 20px; text-align: center;">
+                <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 0;">
+                    Rektorat Bina Intala - Kementerian Ketenagakerjaan RI
+                </p>
+            </div>
+        </div>
+        """
+        mail.send(msg)
+    except:
+        pass
+
     return redirect(url_for('sukses'))
 
 @app.route('/sukses')
@@ -126,11 +192,13 @@ def dashboard():
     total = Peserta.query.count()
     provinsi_count = db.session.query(Peserta.provinsi).distinct().count()
     lembaga_count = db.session.query(Peserta.nama_lembaga).distinct().count()
+    daftar_pelatihan = Pelatihan.query.all()
     return render_template('dashboard.html',
         peserta=peserta,
         total=total,
         provinsi_count=provinsi_count,
-        lembaga_count=lembaga_count
+        lembaga_count=lembaga_count,
+        daftar_pelatihan=daftar_pelatihan
     )
 
 @app.route('/export')
@@ -153,7 +221,51 @@ def export():
     return Response(output, mimetype='text/csv',
                     headers={"Content-Disposition": "attachment;filename=data_peserta.csv"})
 
+@app.route('/pelatihan')
+@login_required
+def pelatihan():
+    daftar_pelatihan = Pelatihan.query.order_by(Pelatihan.tanggal_dibuat.desc()).all()
+    return render_template('pelatihan.html', pelatihan=daftar_pelatihan)
+
+@app.route('/pelatihan/tambah', methods=['GET', 'POST'])
+@login_required
+def tambah_pelatihan():
+    if request.method == 'POST':
+        p = Pelatihan(
+            nama=request.form.get('nama'),
+            tanggal_mulai=request.form.get('tanggal_mulai'),
+            tanggal_selesai=request.form.get('tanggal_selesai'),
+            tipe=request.form.get('tipe'),
+            kuota=request.form.get('kuota'),
+            status=request.form.get('status')
+        )
+        db.session.add(p)
+        db.session.commit()
+        return redirect(url_for('pelatihan'))
+    return render_template('tambah_pelatihan.html')
+
+@app.route('/pelatihan/hapus/<int:id>')
+@login_required
+def hapus_pelatihan(id):
+    p = Pelatihan.query.get_or_404(id)
+    db.session.delete(p)
+    db.session.commit()
+    return redirect(url_for('pelatihan'))
+
+@app.route('/peserta/<int:id>')
+@login_required
+def detail_peserta(id):
+    peserta = Peserta.query.get_or_404(id)
+    return render_template('detail_peserta.html', peserta=peserta)
+
+@app.route('/peserta/hapus/<int:id>')
+@login_required
+def hapus_peserta(id):
+    peserta = Peserta.query.get_or_404(id)
+    db.session.delete(peserta)
+    db.session.commit()
+    return redirect(url_for('dashboard'))
+
 if __name__ == '__main__':
-    import os
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)

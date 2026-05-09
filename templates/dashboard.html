@@ -7,7 +7,27 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
 </head>
+<script>
+function searchTable() {
+    filterTable();
+}
 
+function filterTable() {
+    const searchInput = document.getElementById('searchInput').value.toLowerCase();
+    const filterPelatihan = document.getElementById('filterPelatihan').value.toLowerCase();
+    const rows = document.querySelectorAll('tbody tr');
+    
+    rows.forEach(row => {
+        const text = row.textContent.toLowerCase();
+        const matchSearch = text.includes(searchInput);
+        const matchPelatihan = filterPelatihan === '' || text.includes(filterPelatihan);
+        row.style.display = matchSearch && matchPelatihan ? '' : 'none';
+    });
+}
+</script>
+
+</body>
+</html>
 <body class="dashboard-body">
 
     <!-- Sidebar -->
@@ -23,11 +43,11 @@
         text-decoration: none;
     ">🚪 Logout</a>
 </div>
-        <ul class="sidebar-menu">
-            <li class="active">📋 Data Peserta</li>
-            <li>📊 Statistik</li>
-            <li>⚙️ Pengaturan</li>
-        </ul>
+       <ul class="sidebar-menu">
+    <li class="active" onclick="window.location='/dashboard'">📋 Data Peserta</li>
+    <li onclick="window.location='/pelatihan'">🎓 Pelatihan</li>
+    <li>⚙️ Pengaturan</li>
+</ul>
     </div>
 
     <!-- Main Content -->
@@ -39,8 +59,14 @@
     <a href="/export" class="btn-export">⬇ Export Excel</a>
 ``</div>
 
-<div class="search-bar">
-    <input type="text" id="searchInput" placeholder="🔍 Cari nama, provinsi, lembaga..." onkeyup="searchTable()">
+<div class="search-bar" style="display:flex;gap:12px;">
+    <input type="text" id="searchInput" placeholder="🔍 Cari nama, provinsi, lembaga..." onkeyup="searchTable()" style="flex:1;">
+    <select id="filterPelatihan" onchange="filterTable()" style="width:300px;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
+        <option value="">-- Semua Pelatihan --</option>
+        {% for p in daftar_pelatihan %}
+        <option value="{{ p.nama }}">{{ p.nama }}</option>
+        {% endfor %}
+    </select>
 </div>
 
         <!-- Stats Cards -->
@@ -78,7 +104,7 @@
                     {% for p in peserta %}
                     <tr>
                         <td>{{ loop.index }}</td>
-                        <td>{{ p.nama }}</td>
+                        <td><a href="/peserta/{{ p.id }}" style="color:#1a3a6b;font-weight:600;text-decoration:none;">{{ p.nama }}</a></td>
                         <td>{{ p.email }}</td>
                         <td>{{ p.no_hp }}</td>
                         <td>{{ p.jenis_jabatan }}</td>

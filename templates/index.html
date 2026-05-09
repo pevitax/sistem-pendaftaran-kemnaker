@@ -8,10 +8,13 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Pendaftaran Pelatihan</h1>
-            <p>Rektorat Bina Intala - Kementerian Ketenagakerjaan RI</p>
-        </div>
+<div class="header">
+    <h1>Pendaftaran Pelatihan</h1>
+    <p>Rektorat Bina Intala - Kementerian Ketenagakerjaan RI</p>
+    <p style="margin-top:8px;font-size:12px;color:#999;">
+        Admin? <a href="/login" style="color:#1a3a6b;">Login Dashboard</a>
+    </p>
+</div>
 
         <!-- Progress Bar -->
         <div class="progress">
@@ -69,6 +72,15 @@
                     <label>Email Pribadi <span class="required">*</span></label>
                     <input type="email" name="email" placeholder="Masukkan email aktif">
                 </div>
+                <div class="form-group">
+    <label>Pilih Pelatihan <span class="required">*</span></label>
+    <select name="pelatihan_id">
+        <option value="">-- Pilih Pelatihan --</option>
+        {% for p in pelatihan %}
+        <option value="{{ p.id }}">{{ p.nama }} ({{ p.tipe }} - {{ p.tanggal_mulai }} s/d {{ p.tanggal_selesai }})</option>
+        {% endfor %}
+    </select>
+</div>
                 <button type="button" onclick="goTo(2)">Selanjutnya →</button>
             </div>
 
