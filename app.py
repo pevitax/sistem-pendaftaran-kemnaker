@@ -157,8 +157,9 @@ def daftar():
         </div>
         """
         mail.send(msg)
-    except:
-        pass
+        print("EMAIL BERHASIL DIKIRIM!")
+    except Exception as e:
+        print(f"EMAIL ERROR: {e}")
 
     return redirect(url_for('sukses'))
 
