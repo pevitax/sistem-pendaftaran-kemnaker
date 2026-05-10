@@ -167,30 +167,16 @@
 
 <script>
     function goTo(step) {
-        // Validasi sebelum lanjut
         if (step > 1) {
             const currentSection = document.getElementById('section-' + (step - 1));
             const inputs = currentSection.querySelectorAll('input, select');
             for (let input of inputs) {
-                if (input.hasAttribute('required') || 
-                    input.name === 'nama' || 
-                    input.name === 'tempat_lahir' || 
-                    input.name === 'tanggal_lahir' || 
-                    input.name === 'jenis_kelamin' || 
-                    input.name === 'nik' || 
-                    input.name === 'alamat' || 
-                    input.name === 'no_hp' || 
-                    input.name === 'email' ||
-                    input.name === 'jenis_jabatan' ||
-                    input.name === 'pendidikan' ||
-                    input.name === 'pelatihan_id' ) {
-                    if (!input.value.trim()) {
-                        input.focus();
-                        input.style.borderColor = 'red';
-                        setTimeout(() => input.style.borderColor = '#ddd', 3000);
-                        alert('Mohon lengkapi semua field yang wajib diisi!');
-                        return;
-                    }
+                if (!input.value.trim()) {
+                    input.focus();
+                    input.style.borderColor = 'red';
+                    setTimeout(() => input.style.borderColor = '#ddd', 3000);
+                    alert('Mohon lengkapi semua field yang wajib diisi!');
+                    return;
                 }
             }
         }
