@@ -14,13 +14,14 @@ function searchTable() {
 
 function filterTable() {
     const searchInput = document.getElementById('searchInput').value.toLowerCase();
-    const filterPelatihan = document.getElementById('filterPelatihan').value.toLowerCase();
+    const filterPelatihan = document.getElementById('filterPelatihan').value;
     const rows = document.querySelectorAll('tbody tr');
     
     rows.forEach(row => {
         const text = row.textContent.toLowerCase();
+        const pelatihanId = row.getAttribute('data-pelatihan-id');
         const matchSearch = text.includes(searchInput);
-        const matchPelatihan = filterPelatihan === '' || text.includes(filterPelatihan);
+        const matchPelatihan = filterPelatihan === '' || pelatihanId === filterPelatihan;
         row.style.display = matchSearch && matchPelatihan ? '' : 'none';
     });
 }
