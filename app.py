@@ -113,53 +113,53 @@ def daftar():
     db.session.add(peserta)
     db.session.commit()
 
-    try:
-        msg = Message(
-            subject='Konfirmasi Pendaftaran Pelatihan - Kemnaker',
-            recipients=[peserta.email]
-        )
-        msg.html = f"""
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
-            <div style="background-color: #1a3a6b; padding: 30px; text-align: center;">
-                <h1 style="color: white; margin: 0;">Kementerian Ketenagakerjaan RI</h1>
-                <p style="color: rgba(255,255,255,0.8);">Rektorat Bina Intala</p>
-            </div>
-            <div style="padding: 30px; background-color: #f9f9f9;">
-                <h2 style="color: #1a3a6b;">Pendaftaran Berhasil! ✅</h2>
-                <p>Yth. <strong>{peserta.nama}</strong>,</p>
-                <p>Pendaftaran Anda telah kami terima dengan detail sebagai berikut:</p>
-                <table style="width:100%; border-collapse: collapse; margin: 20px 0;">
-                    <tr style="background-color: #f0f4f8;">
-                        <td style="padding: 10px; font-weight: bold;">Nama</td>
-                        <td style="padding: 10px;">{peserta.nama}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 10px; font-weight: bold;">Email</td>
-                        <td style="padding: 10px;">{peserta.email}</td>
-                    </tr>
-                    <tr style="background-color: #f0f4f8;">
-                        <td style="padding: 10px; font-weight: bold;">Lembaga</td>
-                        <td style="padding: 10px;">{peserta.nama_lembaga}</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 10px; font-weight: bold;">Provinsi</td>
-                        <td style="padding: 10px;">{peserta.provinsi}</td>
-                    </tr>
-                </table>
-                <p>Panitia akan menghubungi Anda melalui email atau WhatsApp untuk informasi lebih lanjut.</p>
-                <p>Terima kasih telah mendaftar!</p>
-            </div>
-            <div style="background-color: #1a3a6b; padding: 20px; text-align: center;">
-                <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 0;">
-                    Rektorat Bina Intala - Kementerian Ketenagakerjaan RI
-                </p>
-            </div>
-        </div>
-        """
-        mail.send(msg)
-        print("EMAIL BERHASIL DIKIRIM!")
-    except Exception as e:
-        print(f"EMAIL ERROR: {e}")
+    # try:
+    #     msg = Message(
+    #         subject='Konfirmasi Pendaftaran Pelatihan - Kemnaker',
+    #         recipients=[peserta.email]
+    #     )
+    #     msg.html = f"""
+    #     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
+    #         <div style="background-color: #1a3a6b; padding: 30px; text-align: center;">
+    #             <h1 style="color: white; margin: 0;">Kementerian Ketenagakerjaan RI</h1>
+    #             <p style="color: rgba(255,255,255,0.8);">Rektorat Bina Intala</p>
+    #         </div>
+    #         <div style="padding: 30px; background-color: #f9f9f9;">
+    #             <h2 style="color: #1a3a6b;">Pendaftaran Berhasil! ✅</h2>
+    #             <p>Yth. <strong>{peserta.nama}</strong>,</p>
+    #             <p>Pendaftaran Anda telah kami terima dengan detail sebagai berikut:</p>
+    #             <table style="width:100%; border-collapse: collapse; margin: 20px 0;">
+    #                 <tr style="background-color: #f0f4f8;">
+    #                     <td style="padding: 10px; font-weight: bold;">Nama</td>
+    #                     <td style="padding: 10px;">{peserta.nama}</td>
+    #                 </tr>
+    #                 <tr>
+    #                     <td style="padding: 10px; font-weight: bold;">Email</td>
+    #                     <td style="padding: 10px;">{peserta.email}</td>
+    #                 </tr>
+    #                 <tr style="background-color: #f0f4f8;">
+    #                     <td style="padding: 10px; font-weight: bold;">Lembaga</td>
+    #                     <td style="padding: 10px;">{peserta.nama_lembaga}</td>
+    #                 </tr>
+    #                 <tr>
+    #                     <td style="padding: 10px; font-weight: bold;">Provinsi</td>
+    #                     <td style="padding: 10px;">{peserta.provinsi}</td>
+    #                 </tr>
+    #             </table>
+    #             <p>Panitia akan menghubungi Anda melalui email atau WhatsApp untuk informasi lebih lanjut.</p>
+    #             <p>Terima kasih telah mendaftar!</p>
+    #         </div>
+    #         <div style="background-color: #1a3a6b; padding: 20px; text-align: center;">
+    #             <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 0;">
+    #                 Rektorat Bina Intala - Kementerian Ketenagakerjaan RI
+    #             </p>
+    #         </div>
+    #     </div>
+    #     """
+    #     #mail.send(msg)
+    #     #print("EMAIL BERHASIL DIKIRIM!")
+    # #except Exception as e:
+    #     print(f"EMAIL ERROR: {e}")
 
     return redirect(url_for('sukses'))
 
