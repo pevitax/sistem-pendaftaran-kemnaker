@@ -102,7 +102,7 @@ function filterTable() {
                 </thead>
                 <tbody>
                     {% for p in peserta %}
-                    <tr>
+                    <tr data-pelatihan-id="{{ p.pelatihan_id if p.pelatihan_id else '' }}">
                         <td>{{ loop.index }}</td>
                         <td><a href="/peserta/{{ p.id }}" style="color:#1a3a6b;font-weight:600;text-decoration:none;">{{ p.nama }}</a></td>
                         <td>{{ p.email }}</td>
