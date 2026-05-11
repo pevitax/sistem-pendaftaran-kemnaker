@@ -169,7 +169,7 @@ def daftar():
         api_instance.send_transac_email(send_smtp_email)
         print("EMAIL BERHASIL DIKIRIM VIA BREVO!")
     except Exception as e:
-        print(f"EMAIL ERROR: {e}")
+        print(f"EMAIL ERROR: {e}") 
 
     return redirect(url_for('sukses'))
 
