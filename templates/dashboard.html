@@ -65,7 +65,7 @@ function filterTable() {
     <select id="filterPelatihan" onchange="filterTable()" style="width:300px;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;">
         <option value="">-- Semua Pelatihan --</option>
         {% for p in daftar_pelatihan %}
-        <option value="{{ p.nama }}">{{ p.nama }}</option>
+        <option value="{{ p.id }}">{{ p.nama }}</option>
         {% endfor %}
     </select>
 </div>
