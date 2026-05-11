@@ -4,3 +4,4 @@ werkzeug
 gunicorn
 psycopg2-binary
 flask-mail
+sib-api-v3-sdk
