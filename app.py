@@ -160,7 +160,16 @@ def daftar():
                 </div>
                 <div style="background-color: #1a3a6b; padding: 20px; text-align: center;">
                     <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 0;">
-                        Rek
+                        Rektorat Bina Intala - Kementerian Ketenagakerjaan RI
+                    </p>
+                </div>
+            </div>
+            """
+        )
+        api_instance.send_transac_email(send_smtp_email)
+        print("EMAIL BERHASIL DIKIRIM VIA BREVO!")
+    except Exception as e:
+        print(f"EMAIL ERROR: {e}")
 
     return redirect(url_for('sukses'))
 
