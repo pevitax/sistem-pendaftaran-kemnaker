@@ -78,7 +78,7 @@ def login_required(f):
 def kirim_email_brevo(peserta):
     try:
         configuration = sib_api_v3_sdk.Configuration()
-        configuration.api_key['api-key'] = os.environ.get('BREVO_API_KEY')
+        configuration.api_key['api-key'] = api_key.strip() if api_key else None
         api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
         html = (
             '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">'
