@@ -31,7 +31,7 @@
         </div>
 
 <form action="/daftar" method="POST" onsubmit="return validateStep3()">
-    
+
             <!-- STEP 1 -->
             <div id="section-1">
                 <div class="form-group">
@@ -58,7 +58,7 @@
                 </div>
                 <div class="form-group">
                     <label>NIK <span class="required">*</span></label>
-                    <input type="text" name="nik" placeholder="16 digit NIK" maxlength="16">
+                    <input type="text" name="nik" placeholder="16 digit NIK" maxlength="16" inputmode="numeric" pattern="\d{16}""
                 </div>
                 <div class="form-group">
                     <label>Alamat Rumah <span class="required">*</span></label>
@@ -177,7 +177,25 @@
                     setTimeout(() => input.style.borderColor = '#ddd', 3000);
                     alert('Mohon lengkapi semua field yang wajib diisi!');
                     return;
-                }
+                }   
+                 // VALIDASI NIK
+                 if (input.name === 'nik') {
+                    const nik = input.value.trim();
+
+        // hanya angka + harus 16 digit
+                 if (!/^\d{16}$/.test(nik)) {
+                     input.focus();
+                     input.style.borderColor = 'red';
+
+                     setTimeout(() => {
+                     input.style.borderColor = '#ddd';
+                     }, 3000);
+
+                     alert('NIK harus terdiri dari 16 digit angka!');
+                    return;
+        }       
+    }
+}
             }
         }
 
