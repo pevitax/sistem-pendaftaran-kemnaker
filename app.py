@@ -76,19 +76,6 @@ def login_required(f):
     return decorated
 
 def kirim_email_brevo(peserta):
-    try:
-        configuration = sib_api_v3_sdk.Configuration()
-        configuration.api_key['api-key'] = os.environ.get('BREVO_API_KEY')
-        api_key = os.environ.get('BREVO_API_KEY')
-        print("API KEY ADA?:", api_key is not None)
-        if api_key:
-            print("AWAL API KEY:", api_key[:15])
-        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
-        # api_key = os.environ.get('BREVO_API_KEY')
-        # print(f"API KEY: '{api_key}'")  # debug
-        # configuration = sib_api_v3_sdk.Configuration()
-        # configuration.api_key['api-key'] = api_key.strip() if api_key else None
-        html = (
             '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">'
             '<div style="background-color: #1a3a6b; padding: 30px; text-align: center;">'
             '<h1 style="color: white; margin: 0;">Kementerian Ketenagakerjaan RI</h1>'
@@ -123,24 +110,7 @@ def kirim_email_brevo(peserta):
             '<p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 0;">'
             'Rektorat Bina Intala - Kementerian Ketenagakerjaan RI'
             '</p></div></div>'
-        )
-        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-            to=[{"email": peserta.email, "name": peserta.nama}],
-            sender={"email": "ajienata97@gmail.com", "name": "Kemnaker Bina Intala"},
-            subject="Konfirmasi Pendaftaran Pelatihan - Kemnaker",
-            html_content=html
-        )
-        api_instance.send_transac_email(send_smtp_email)
-        print("EMAIL BERHASIL DIKIRIM VIA BREVO!")
-    except Exception as e:
-        print(f"EMAIL ERROR: {e}")
-class Dummy:
-    nama = "Ajie"
-    email = "emailtujuan@gmail.com"
-    nama_lembaga = "Test"
-    provinsi = "Jawa Barat"
 
-kirim_email_brevo(Dummy())
 
 @app.route('/')
 def home():
