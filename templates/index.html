@@ -198,5 +198,27 @@
         }
     }
 </script>
+<script>
+    function validateStep3() {
+        const section = document.getElementById('section-3');
+        const inputs = section.querySelectorAll('input, select');
+
+        for (let input of inputs) {
+            if (!input.value.trim()) {
+                input.focus();
+                input.style.borderColor = 'red';
+
+                setTimeout(() => {
+                    input.style.borderColor = '#ddd';
+                }, 3000);
+
+                alert('Mohon lengkapi semua field Data Lembaga!');
+                return false;
+            }
+        }
+
+        return true;
+    }
+</script>
 </body>
 </html>
