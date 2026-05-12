@@ -134,6 +134,13 @@ def kirim_email_brevo(peserta):
         print("EMAIL BERHASIL DIKIRIM VIA BREVO!")
     except Exception as e:
         print(f"EMAIL ERROR: {e}")
+class Dummy:
+    nama = "Ajie"
+    email = "emailtujuan@gmail.com"
+    nama_lembaga = "Test"
+    provinsi = "Jawa Barat"
+
+kirim_email_brevo(Dummy())
 
 @app.route('/')
 def home():
