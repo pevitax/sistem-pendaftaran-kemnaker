@@ -1,12 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, Response, session
 from flask_sqlalchemy import SQLAlchemy
-from flask_mail import Mail, Message
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from functools import wraps
 import csv
 import io
 import os
+import sib_api_v3_sdk
 
 app = Flask(__name__)
 database_url = os.environ.get('DATABASE_URL', 'sqlite:///pendaftaran.db')
@@ -15,14 +15,7 @@ if database_url.startswith('postgres://'):
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'kemnaker-bina-intala-2026'
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USERNAME'] = os.environ.get('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.environ.get('MAIL_PASSWORD')
-app.config['MAIL_DEFAULT_SENDER'] = os.environ.get('MAIL_USERNAME')
 
-mail = Mail(app)
 db = SQLAlchemy(app)
 
 class Pelatihan(db.Model):
@@ -82,6 +75,58 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated
 
+def kirim_email_brevo(peserta):
+    try:
+        configuration = sib_api_v3_sdk.Configuration()
+        configuration.api_key['api-key'] = os.environ.get('BREVO_API_KEY')
+        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
+        html = (
+            '<div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">'
+            '<div style="background-color: #1a3a6b; padding: 30px; text-align: center;">'
+            '<h1 style="color: white; margin: 0;">Kementerian Ketenagakerjaan RI</h1>'
+            '<p style="color: rgba(255,255,255,0.8);">Rektorat Bina Intala</p>'
+            '</div>'
+            '<div style="padding: 30px; background-color: #f9f9f9;">'
+            '<h2 style="color: #1a3a6b;">Pendaftaran Berhasil! ✅</h2>'
+            f'<p>Yth. <strong>{peserta.nama}</strong>,</p>'
+            '<p>Pendaftaran Anda telah kami terima dengan detail sebagai berikut:</p>'
+            '<table style="width:100%; border-collapse: collapse; margin: 20px 0;">'
+            '<tr style="background-color: #f0f4f8;">'
+            '<td style="padding: 10px; font-weight: bold;">Nama</td>'
+            f'<td style="padding: 10px;">{peserta.nama}</td>'
+            '</tr>'
+            '<tr>'
+            '<td style="padding: 10px; font-weight: bold;">Email</td>'
+            f'<td style="padding: 10px;">{peserta.email}</td>'
+            '</tr>'
+            '<tr style="background-color: #f0f4f8;">'
+            '<td style="padding: 10px; font-weight: bold;">Lembaga</td>'
+            f'<td style="padding: 10px;">{peserta.nama_lembaga}</td>'
+            '</tr>'
+            '<tr>'
+            '<td style="padding: 10px; font-weight: bold;">Provinsi</td>'
+            f'<td style="padding: 10px;">{peserta.provinsi}</td>'
+            '</tr>'
+            '</table>'
+            '<p>Panitia akan menghubungi Anda melalui email atau WhatsApp untuk informasi lebih lanjut.</p>'
+            '<p>Terima kasih telah mendaftar!</p>'
+            '</div>'
+            '<div style="background-color: #1a3a6b; padding: 20px; text-align: center;">'
+            '<p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 0;">'
+            'Rektorat Bina Intala - Kementerian Ketenagakerjaan RI'
+            '</p></div></div>'
+        )
+        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
+            to=[{"email": peserta.email, "name": peserta.nama}],
+            sender={"email": "ajienata97@gmail.com", "name": "Kemnaker Bina Intala"},
+            subject="Konfirmasi Pendaftaran Pelatihan - Kemnaker",
+            html_content=html
+        )
+        api_instance.send_transac_email(send_smtp_email)
+        print("EMAIL BERHASIL DIKIRIM VIA BREVO!")
+    except Exception as e:
+        print(f"EMAIL ERROR: {e}")
+
 @app.route('/')
 def home():
     daftar_pelatihan = Pelatihan.query.filter_by(status='aktif').all()
@@ -112,65 +157,7 @@ def daftar():
     )
     db.session.add(peserta)
     db.session.commit()
-
-# Kirim email konfirmasi via Brevo
-    try:
-        import sib_api_v3_sdk
-        from sib_api_v3_sdk.rest import ApiException
-
-        configuration = sib_api_v3_sdk.Configuration()
-        configuration.api_key['api-key'] = os.environ.get('BREVO_API_KEY')
-
-        api_instance = sib_api_v3_sdk.TransactionalEmailsApi(sib_api_v3_sdk.ApiClient(configuration))
-
-        send_smtp_email = sib_api_v3_sdk.SendSmtpEmail(
-            to=[{"email": peserta.email, "name": peserta.nama}],
-            sender={"email": "ajienata97@gmail.com", "name": "Kemnaker Bina Intala"},
-            subject="Konfirmasi Pendaftaran Pelatihan - Kemnaker",
-            html_content=f"""
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">
-                <div style="background-color: #1a3a6b; padding: 30px; text-align: center;">
-                    <h1 style="color: white; margin: 0;">Kementerian Ketenagakerjaan RI</h1>
-                    <p style="color: rgba(255,255,255,0.8);">Rektorat Bina Intala</p>
-                </div>
-                <div style="padding: 30px; background-color: #f9f9f9;">
-                    <h2 style="color: #1a3a6b;">Pendaftaran Berhasil! ✅</h2>
-                    <p>Yth. <strong>{peserta.nama}</strong>,</p>
-                    <p>Pendaftaran Anda telah kami terima dengan detail sebagai berikut:</p>
-                    <table style="width:100%; border-collapse: collapse; margin: 20px 0;">
-                        <tr style="background-color: #f0f4f8;">
-                            <td style="padding: 10px; font-weight: bold;">Nama</td>
-                            <td style="padding: 10px;">{peserta.nama}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; font-weight: bold;">Email</td>
-                            <td style="padding: 10px;">{peserta.email}</td>
-                        </tr>
-                        <tr style="background-color: #f0f4f8;">
-                            <td style="padding: 10px; font-weight: bold;">Lembaga</td>
-                            <td style="padding: 10px;">{peserta.nama_lembaga}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; font-weight: bold;">Provinsi</td>
-                            <td style="padding: 10px;">{peserta.provinsi}</td>
-                        </tr>
-                    </table>
-                    <p>Panitia akan menghubungi Anda melalui email atau WhatsApp untuk informasi lebih lanjut.</p>
-                    <p>Terima kasih telah mendaftar!</p>
-                </div>
-                <div style="background-color: #1a3a6b; padding: 20px; text-align: center;">
-                    <p style="color: rgba(255,255,255,0.7); font-size: 12px; margin: 0;">
-                        Rektorat Bina Intala - Kementerian Ketenagakerjaan RI
-                    </p>
-                </div>
-            </div>
-            """
-        )
-        api_instance.send_transac_email(send_smtp_email)
-        print("EMAIL BERHASIL DIKIRIM VIA BREVO!")
-    except Exception as e:
-        print(f"EMAIL ERROR: {e}") 
-
+    kirim_email_brevo(peserta)
     return redirect(url_for('sukses'))
 
 @app.route('/sukses')
@@ -254,6 +241,7 @@ def tambah_pelatihan():
         db.session.commit()
         return redirect(url_for('pelatihan'))
     return render_template('tambah_pelatihan.html')
+
 @app.route('/pelatihan/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_pelatihan(id):
@@ -290,6 +278,7 @@ def hapus_peserta(id):
     db.session.delete(peserta)
     db.session.commit()
     return redirect(url_for('dashboard'))
+
 @app.route('/peserta/edit/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_peserta(id):
@@ -316,7 +305,7 @@ def edit_peserta(id):
         db.session.commit()
         return redirect(url_for('detail_peserta', id=peserta.id))
     daftar_pelatihan = Pelatihan.query.filter_by(status='aktif').all()
-    return render_temp
+    return render_template('edit_peserta.html', peserta=peserta, pelatihan=daftar_pelatihan)
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
