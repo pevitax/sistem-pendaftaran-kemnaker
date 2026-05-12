@@ -166,55 +166,84 @@
     </div>
 
 <script>
-    function goTo(step) {
-        if (step > 1) {
-            const currentSection = document.getElementById('section-' + (step - 1));
-            const inputs = currentSection.querySelectorAll('input, select');
-            for (let input of inputs) {
-                if (!input.value.trim()) {
+function goTo(step) {
+
+    // VALIDASI STEP SEBELUM LANJUT
+    if (step > 1) {
+
+        const currentSection =
+            document.getElementById('section-' + (step - 1));
+
+        const inputs =
+            currentSection.querySelectorAll('input, select');
+
+        for (let input of inputs) {
+
+            // VALIDASI FIELD KOSONG
+            if (!input.value.trim()) {
+
+                input.focus();
+                input.style.borderColor = 'red';
+
+                setTimeout(() => {
+                    input.style.borderColor = '#ddd';
+                }, 3000);
+
+                alert('Mohon lengkapi semua field yang wajib diisi!');
+                return;
+            }
+
+            // VALIDASI NIK
+            if (input.name === 'nik') {
+
+                const nik = input.value.trim();
+
+                // HARUS 16 DIGIT ANGKA
+                if (!/^\d{16}$/.test(nik)) {
+
                     input.focus();
                     input.style.borderColor = 'red';
-                    setTimeout(() => input.style.borderColor = '#ddd', 3000);
-                    alert('Mohon lengkapi semua field yang wajib diisi!');
+
+                    setTimeout(() => {
+                        input.style.borderColor = '#ddd';
+                    }, 3000);
+
+                    alert('NIK harus terdiri dari 16 digit angka!');
                     return;
-                }   
-                 // VALIDASI NIK
-                 if (input.name === 'nik') {
-                    const nik = input.value.trim();
-
-        // hanya angka + harus 16 digit
-                 if (!/^\d{16}$/.test(nik)) {
-                     input.focus();
-                     input.style.borderColor = 'red';
-
-                     setTimeout(() => {
-                     input.style.borderColor = '#ddd';
-                     }, 3000);
-
-                     alert('NIK harus terdiri dari 16 digit angka!');
-                    return;
-        }       
-    }
-}
+                }
             }
         }
-
-        for (let i = 1; i <= 3; i++) {
-            document.getElementById('section-' + i).style.display = 'none';
-            document.getElementById('step-' + i).className = 'step';
-            document.getElementById('label-' + i).className = '';
-        }
-        document.getElementById('section-' + step).style.display = 'block';
-        document.getElementById('step-' + step).className = 'step active';
-        document.getElementById('label-' + step).className = 'active';
-
-        for (let i = 1; i < step; i++) {
-            document.getElementById('step-' + i).className = 'step done';
-            document.getElementById('step-' + i).innerHTML = '✓';
-            document.getElementById('label-' + i).className = 'done';
-            document.getElementById('line-' + i).className = 'line active';
-        }
     }
+
+    // RESET SEMUA STEP
+    for (let i = 1; i <= 3; i++) {
+
+        document.getElementById('section-' + i).style.display = 'none';
+
+        document.getElementById('step-' + i).className = 'step';
+
+        document.getElementById('label-' + i).className = '';
+    }
+
+    // AKTIFKAN STEP SAAT INI
+    document.getElementById('section-' + step).style.display = 'block';
+
+    document.getElementById('step-' + step).className = 'step active';
+
+    document.getElementById('label-' + step).className = 'active';
+
+    // STEP SEBELUMNYA JADI DONE
+    for (let i = 1; i < step; i++) {
+
+        document.getElementById('step-' + i).className = 'step done';
+
+        document.getElementById('step-' + i).innerHTML = '✓';
+
+        document.getElementById('label-' + i).className = 'done';
+
+        document.getElementById('line-' + i).className = 'line active';
+    }
+}
 </script>
 <script>
     function validateStep3() {
